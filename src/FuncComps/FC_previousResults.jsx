@@ -1,4 +1,3 @@
-// FC_previousResults.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, FormControl, InputLabel, Select, MenuItem, Button, Grid } from '@mui/material';
@@ -7,22 +6,24 @@ import DOMPurify from 'dompurify';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  padding: 20px;
-  width: 80%;
-  margin: auto;
+  width: 100%;
+  margin: 0 auto;
   text-align: center;
+  background-color: #121212; /* Dark background */
+  color: #fff; /* Light text */
+  min-height: 100vh;
 `;
 
 const Title = styled.h1`
   text-align: center;
   margin-bottom: 20px;
   font-size: 2.5rem;
-  color: #3f51b5;
+  color: #bb86fc; /* Modern accent color */
 `;
 
 const FilterBox = styled(Box)`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-bottom: 20px;
   flex-wrap: wrap;
 `;
@@ -30,15 +31,42 @@ const FilterBox = styled(Box)`
 const StyledFormControl = styled(FormControl)`
   min-width: 150px;
   margin-bottom: 10px;
+
+  & .MuiInputLabel-root {
+    color: #bb86fc; /* Modern accent color */
+  }
+
+  & .MuiInputBase-root {
+    color: #fff; /* Light text */
+    border-color: #bb86fc !important; /* Colored border */
+  }
+
+  & .MuiOutlinedInput-root {
+    fieldset {
+      border-color: #bb86fc; /* Colored border */
+    }
+
+    &:hover fieldset {
+      border-color: #bb86fc; /* Colored border on hover */
+    }
+
+    &.Mui-focused fieldset {
+      border-color: #bb86fc; /* Colored border when focused */
+    }
+  }
+
+  & .MuiSelect-selectMenu {
+    overflow: hidden; /* Prevent overflow issues */
+  }
 `;
 
 const StyledButton = styled(Button)`
   height: 56px;
-  background-color: #3f51b5;
-  color: #fff;
+  background-color: #bb86fc; /* Modern accent color */
+  color: #121212; /* Dark background */
 
   &:hover {
-    background-color: #303f9f;
+    background-color: #3700b3; /* Darker accent color */
   }
 `;
 
@@ -46,13 +74,15 @@ const StyledAccordion = styled(Accordion)`
   border-radius: 8px;
   width: 100%;
   margin: 5px 0;
+  background-color: #1e1e1e; /* Darker background */
+  overflow: hidden; /* Ensure no overflow issues */
 
   & .MuiAccordionSummary-root {
     padding: 10px 20px;
   }
 
   & .MuiAccordionDetails-root {
-    background-color: #e0e0e0;
+    background-color: #d3d3c9; /* Dark detail background */
     border-radius: 0 0 8px 8px;
     padding: 20px;
   }
@@ -60,6 +90,7 @@ const StyledAccordion = styled(Accordion)`
 
 const StyledTypography = styled(Typography)`
   margin-right: 20px;
+  margin-bottom: 10px; /* Add spacing between elements */
 `;
 
 const FC_previousResults = () => {
@@ -122,7 +153,7 @@ const FC_previousResults = () => {
   const getBackgroundColor = (result) => {
     if (result === 'good') return '#59ff4a';
     if (result === 'mid') return '#f5ec76';
-    if (result === 'bad') return '#f8d7da';
+    if (result === 'bad') return 'rgb(230 105 116)';
     return '#fff';
   };
 
@@ -177,7 +208,7 @@ const FC_previousResults = () => {
             <MenuItem value="gpt-4">GPT-4</MenuItem>
           </Select>
         </StyledFormControl>
-        <StyledButton variant="contained" onClick={filterResults}>Filter</StyledButton>
+        {/* <StyledButton variant="contained" onClick={filterResults}>Filter</StyledButton> */}
       </FilterBox>
       <Grid container spacing={2}>
         {filteredResults.map((result, index) => (
@@ -191,19 +222,19 @@ const FC_previousResults = () => {
               >
                 <Box display="flex" alignItems="center" width="100%" flexWrap="wrap">
                   <StyledTypography style={{ fontWeight: 'bold' }}>Question ID: {result.questionId}</StyledTypography>
-                  <StyledTypography><strong>Rating Answer 1:</strong> {result.ratingAnswer1}</StyledTypography>
-                  <StyledTypography><strong>Rating Answer 2:</strong> {result.ratingAnswer2}</StyledTypography>
-                  <StyledTypography><strong>Rating Answer 3:</strong> {result.ratingAnswer3}</StyledTypography>
+                  <StyledTypography style={{ margin: 'auto'}}><strong>Rating Answer 1:</strong> {result.ratingAnswer1}</StyledTypography>
+                  <StyledTypography style={{ margin: 'auto'}}><strong>Rating Answer 2:</strong> {result.ratingAnswer2}</StyledTypography>
+                  <StyledTypography style={{ margin: 'auto'}}><strong>Rating Answer 3:</strong> {result.ratingAnswer3}</StyledTypography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography component="div"><strong>Full Message:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.fullMessage) }} /></Typography>
-                <Typography component="div"><strong>Answer 1:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer1) }} /></Typography>
-                <Typography component="div"><strong>Explanation for Rating 1:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating1) }} /></Typography>
-                <Typography component="div"><strong>Answer 2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer2) }} /></Typography>
-                <Typography component="div"><strong>Explanation for Rating 2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating2) }} /></Typography>
-                <Typography component="div"><strong>Answer 3:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer3) }} /></Typography>
-                <Typography component="div"><strong>Explanation for Rating 3:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating3) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Full Message:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.fullMessage) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 1:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer1) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating 1:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating1) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer2) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating 2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating2) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 3:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer3) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating 3:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating3) }} /></Typography>
               </AccordionDetails>
             </StyledAccordion>
           </Grid>

@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 import { convertToCSV, downloadCSV } from '../Util/csvUtils.js';
 import InfoIcon from '@mui/icons-material/Info';
 import { useCountUp } from 'use-count-up';
+import styled from 'styled-components';
 
 const modalStyle = {
     position: 'absolute',
@@ -14,7 +15,8 @@ const modalStyle = {
     transform: 'translate(-50%, -50%)',
     width: '60%',
     maxHeight: '80%',
-    bgcolor: 'background.paper',
+    bgcolor: '#333', // Dark background for modal
+    color: '#fff', // Light text for modal
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
@@ -22,16 +24,41 @@ const modalStyle = {
 };
 
 const getBackgroundColor = (response) => {   
-
     const {result} = response;
 
-    if (result == 'good')
-        return '#59ff4a'
-    else if (result == 'mid')
-        return '#f5ec76'
-    else if (result == 'bad')
-        return '#f8d7da' 
+    if (result === 'good') return '#59ff4a';
+    if (result === 'mid') return '#f5ec76';
+    if (result === 'bad') return 'rgb(230 105 116)';
+    return '#fff';
 };
+
+const StyledFormControl = styled(FormControl)`
+  min-width: 150px;
+  margin-bottom: 10px;
+
+  & .MuiInputLabel-root {
+    color: #bb86fc; /* Modern accent color */
+  }
+
+  & .MuiInputBase-root {
+    color: #fff; /* Light text */
+    border-color: #bb86fc !important; /* Colored border */
+  }
+
+  & .MuiOutlinedInput-root {
+    fieldset {
+      border-color: #bb86fc; /* Colored border */
+    }
+
+    &:hover fieldset {
+      border-color: #bb86fc; /* Colored border on hover */
+    }
+
+    &.Mui-focused fieldset {
+      border-color: #bb86fc; /* Colored border when focused */
+    }
+  }
+`;
 
 export default function FC_insertData() {
     const [fileData, setFileData] = useState([]);
@@ -133,20 +160,21 @@ export default function FC_insertData() {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '20vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '20vh', backgroundColor: '#121212', color: '#fff' }}>
             <h1>Insert Data</h1>
-            <FormControl variant="outlined" style={{ marginBottom: '20px', minWidth: 120 }}>
-                <InputLabel id="select-model-label">Model</InputLabel>
+            <StyledFormControl variant="outlined" style={{ marginBottom: '20px', minWidth: 120, color: '#fff' }}>
+                <InputLabel id="select-model-label" style={{ color: '#bb86fc' }}>Model</InputLabel>
                 <Select
                     labelId="select-model-label"
                     value={selectedModel}
                     onChange={(e) => setSelectedModel(e.target.value)}
                     label="Model"
+                    style={{ color: '#fff', borderColor: '#bb86fc' }}
                 >
                     <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
                     <MenuItem value="gpt-4">GPT-4</MenuItem>
                 </Select>
-            </FormControl>
+            </StyledFormControl>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
                 <input
                     accept=".csv, .xml"
@@ -156,19 +184,21 @@ export default function FC_insertData() {
                     onChange={handleFileChange}
                 />
                 <label htmlFor="raised-button-file">
-                    <Button variant="contained" component="span" startIcon={<CloudUploadIcon />}>
+                    <Button variant="contained" component="span" startIcon={<CloudUploadIcon />} style={{ backgroundColor: '#bb86fc', color: '#121212' }}>
                         Upload
                     </Button>
                 </label>
                 {fileUploaded && <CheckCircleIcon color="success" style={{ marginLeft: 10 }} />}
-                <div>{fileUploaded && <Typography style={{ marginLeft: 20 }}>{`Uploaded ${fileData.length} queries to be processed`}</Typography>}</div>
+                <div>{fileUploaded && <Typography style={{ marginLeft: 20, color: '#fff' }}>{`Uploaded ${fileData.length} queries to be processed`}</Typography>}</div>
             </div>
-            <Button variant="contained" onClick={handleSendData} disabled={!fileUploaded || isSending}>
-                Send
-            </Button>
+            {!isSending && (
+                <Button variant="contained" onClick={handleSendData} disabled={!fileUploaded || isSending} style={{ backgroundColor: '#bb86fc', color: '#121212' }}>
+                    Send
+                </Button>
+            )}
             {isSending && (
                 <div style={{ marginTop: '20px', position: 'relative', textAlign: 'center' }}>
-                    <Typography variant="h6" component="div" color="textSecondary" gutterBottom>
+                    <Typography style={{color:'white'}} variant="h6" component="div" color="textSecondary" gutterBottom>
                         Uploading
                     </Typography>
                     <Box position="relative" display="inline-flex">
@@ -183,7 +213,7 @@ export default function FC_insertData() {
                             alignItems="center"
                             justifyContent="center"
                         >
-                            <Typography variant="h6" component="div" color="textSecondary">
+                            <Typography style={{color:'white'}} variant="h6" component="div" color="textSecondary">
                                 {progressValue}%
                             </Typography>
                         </Box>
@@ -194,9 +224,9 @@ export default function FC_insertData() {
                 {responses.map((response, index) => (
                     <Card key={index} style={{ margin: '10px', minWidth: '300px', maxWidth: '300px', flex: '1', position: 'relative', backgroundColor: getBackgroundColor(response) }}>
                         <CardContent>
-                            <Typography variant="h6">Response {index + 1}</Typography>
+                            <Typography variant="h6" style={{ color: '#121212' }}>Response {index + 1}</Typography>
                             {['questionId', 'rating_Answer1', 'rating_Answer2', 'rating_Answer3'].map((key) => (
-                                <Typography key={key} variant="body2"><strong>{key}:</strong> {response[key]}</Typography>
+                                <Typography key={key} variant="body2" style={{ color: '#121212' }}><strong>{key}:</strong> {response[key]}</Typography>
                             ))}
                             <IconButton
                                 onClick={() => handleOpenModal(response)}
@@ -209,7 +239,7 @@ export default function FC_insertData() {
                 ))}
             </div>
             {responses.length > 0 && (
-                <Button variant="contained" onClick={handleDownloadCSV} style={{ marginTop: '20px' }}>
+                <Button variant="contained" onClick={handleDownloadCSV} style={{ marginTop: '20px', backgroundColor: '#bb86fc', color: '#121212' }}>
                     Download CSV
                 </Button>
             )}
