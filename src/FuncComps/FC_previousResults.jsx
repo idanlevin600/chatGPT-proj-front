@@ -29,7 +29,7 @@ const FilterBox = styled(Box)`
 `;
 
 const StyledFormControl = styled(FormControl)`
-  min-width: 200px; /* Increased minimum width */
+  width: 250px; /* Fixed width */
   margin-bottom: 10px;
 
   & .MuiInputLabel-root {
@@ -222,9 +222,9 @@ const FC_previousResults = () => {
               >
                 <Box display="flex" alignItems="center" width="100%" flexWrap="wrap">
                   <StyledTypography style={{ fontWeight: 'bold' }}>Question ID: {result.questionId}</StyledTypography>
-                  <StyledTypography style={{ margin:'auto'}}><strong>Rating Answer 1:</strong> {result.ratingAnswer1}</StyledTypography>
-                  <StyledTypography style={{ margin:'auto'}}><strong>Rating Answer 2:</strong> {result.ratingAnswer2}</StyledTypography>
-                  <StyledTypography style={{ margin:'auto'}}><strong>Rating Answer 3:</strong> {result.ratingAnswer3}</StyledTypography>
+                  <StyledTypography style={{ margin: 'auto'}}><strong>Rating Answer 1:</strong> {result.ratingAnswer1}</StyledTypography>
+                  <StyledTypography style={{ margin: 'auto'}}><strong>Rating Answer 2:</strong> {result.ratingAnswer2}</StyledTypography>
+                  <StyledTypography style={{ margin: 'auto'}}><strong>Rating Answer 3:</strong> {result.ratingAnswer3}</StyledTypography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
