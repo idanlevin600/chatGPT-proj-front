@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, FormControl, InputLabel, Select, MenuItem, Button, Grid } from '@mui/material';
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, FormControl, InputLabel, Select, MenuItem, Button, Grid, Pagination, TextField } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DOMPurify from 'dompurify';
 import styled from 'styled-components';
@@ -26,6 +26,20 @@ const FilterBox = styled(Box)`
   justify-content: space-around;
   margin-bottom: 20px;
   flex-wrap: wrap;
+`;
+
+const CustomPagination = styled(Pagination)`
+  & .MuiPaginationItem-root {
+    color: #bb86fc; /* Light text color */
+  }
+  & .MuiPaginationItem-root.Mui-selected {
+    background-color: #3700b3; /* Darker accent color */
+    color: #fff; /* Light text */
+  }
+  & .MuiPaginationItem-root:hover {
+    background-color: #bb86fc; /* Modern accent color */
+    color: #121212; /* Dark background */
+  }
 `;
 
 const StyledFormControl = styled(FormControl)`
@@ -93,13 +107,39 @@ const StyledTypography = styled(Typography)`
   margin-bottom: 10px; /* Add spacing between elements */
 `;
 
+const StyledTextField = styled(TextField)`
+  & .MuiOutlinedInput-root {
+    & fieldset {
+      border-color: #bb86fc; /* Purple border */
+    }
+
+    &:hover fieldset {
+      border-color: #bb86fc; /* Purple border on hover */
+    }
+
+    &.Mui-focused fieldset {
+      border-color: #bb86fc; /* Purple border when focused */
+    }
+  }
+
+  & .MuiInputBase-root {
+    color: #fff; /* Light text */
+  }
+
+  & .MuiInputLabel-root {
+    color: #bb86fc; /* Modern accent color */
+  }
+`;
+
 const FC_previousResults = () => {
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const [tags, setTags] = useState([]);
-  const [selectedTag, setSelectedTag] = useState('');
   const [selectedResult, setSelectedResult] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState('');
+  const resultsPerPage = 5;
 
   useEffect(() => {
     fetchResults();
@@ -109,7 +149,14 @@ const FC_previousResults = () => {
     const uniqueTags = [...new Set(results.map(result => result.tag))];
     setTags(uniqueTags);
     filterResults();
-  }, [results, selectedTag, selectedResult, selectedModel]);
+  }, [results, selectedResult, selectedModel]);
+
+  useEffect(() => {
+    const pageNumber = parseInt(pageInput, 10);
+    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= Math.ceil(filteredResults.length / resultsPerPage)) {
+      setCurrentPage(pageNumber);
+    }
+  }, [pageInput]);
 
   const fetchResults = async () => {
     try {
@@ -123,10 +170,6 @@ const FC_previousResults = () => {
   const filterResults = () => {
     let filtered = results;
 
-    if (selectedTag) {
-      filtered = filtered.filter(result => result.tag === selectedTag);
-    }
-
     if (selectedResult) {
       filtered = filtered.filter(result => result.result === selectedResult);
     }
@@ -138,16 +181,21 @@ const FC_previousResults = () => {
     setFilteredResults(filtered);
   };
 
-  const handleTagChange = (event) => {
-    setSelectedTag(event.target.value);
-  };
-
   const handleResultChange = (event) => {
     setSelectedResult(event.target.value);
   };
 
   const handleModelChange = (event) => {
     setSelectedModel(event.target.value);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+    setPageInput(value.toString());
+  };
+
+  const handlePageInputChange = (event) => {
+    setPageInput(event.target.value);
   };
 
   const getBackgroundColor = (result) => {
@@ -157,26 +205,14 @@ const FC_previousResults = () => {
     return '#fff';
   };
 
+  const indexOfLastResult = currentPage * resultsPerPage;
+  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
+  const currentResults = filteredResults.slice(indexOfFirstResult, indexOfLastResult);
+
   return (
     <Container>
       <Title>Previous Results</Title>
       <FilterBox>
-        <StyledFormControl variant="outlined">
-          <InputLabel id="select-tag-label">Tag</InputLabel>
-          <Select
-            labelId="select-tag-label"
-            value={selectedTag}
-            onChange={handleTagChange}
-            label="Tag"
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {tags.map((tag, index) => (
-              <MenuItem key={index} value={tag}>{tag}</MenuItem>
-            ))}
-          </Select>
-        </StyledFormControl>
         <StyledFormControl variant="outlined">
           <InputLabel id="select-result-label">Result</InputLabel>
           <Select
@@ -211,7 +247,7 @@ const FC_previousResults = () => {
         <StyledButton variant="contained" onClick={filterResults}>Filter</StyledButton>
       </FilterBox>
       <Grid container spacing={2}>
-        {filteredResults.map((result, index) => (
+        {currentResults.map((result, index) => (
           <Grid item xs={12} key={index}>
             <StyledAccordion>
               <AccordionSummary
@@ -228,11 +264,15 @@ const FC_previousResults = () => {
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Creation Date:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.questionCreationDate) }} /></Typography>
                 <Typography component="div" style={{ marginBottom: '10px' }}><strong>Full Message:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.fullMessage) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 1 ID:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer1Id) }} /></Typography>
                 <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 1:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer1) }} /></Typography>
                 <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating 1:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating1) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 2 ID:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer2Id) }} /></Typography>
                 <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer2) }} /></Typography>
-                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating 2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating2) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating2:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating2) }} /></Typography>
+                <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 3 ID:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer3Id) }} /></Typography>
                 <Typography component="div" style={{ marginBottom: '10px' }}><strong>Answer 3:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.answer3) }} /></Typography>
                 <Typography component="div" style={{ marginBottom: '10px' }}><strong>Explanation for Rating 3:</strong> <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.explanationForRating3) }} /></Typography>
               </AccordionDetails>
@@ -240,6 +280,22 @@ const FC_previousResults = () => {
           </Grid>
         ))}
       </Grid>
+      <Box display="flex" justifyContent="center" marginTop="20px">
+        <CustomPagination
+          count={Math.ceil(filteredResults.length / resultsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+        />
+      </Box>
+      <Box display="flex" justifyContent="center" marginTop="10px">
+        <StyledTextField
+          label="Go to page"
+          variant="outlined"
+          value={pageInput}
+          onChange={handlePageInputChange}
+          style={{ marginRight: '10px' }}
+        />
+      </Box>
     </Container>
   );
 };

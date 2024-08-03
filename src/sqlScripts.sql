@@ -17,20 +17,24 @@ CREATE TABLE gpt_responses (
 
 --for ssms
 
-CREATE TABLE gpt_responses(
+CREATE TABLE [dbo].[gpt_responses](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-    [tag] [text] NOT NULL,
-    [model] [text] NOT NULL,
+	[model] [text] NOT NULL,
 	[questionId] [int] NOT NULL,
 	[fullMessage] [text] NOT NULL,
+	[answer1Id] [int] NOT NULL,
 	[answer1] [text] NOT NULL,
 	[ratingAnswer1] [int] NOT NULL,
 	[explanationForRating1] [text] NOT NULL,
+	[answer2Id] [int] NOT NULL,
 	[answer2] [text] NOT NULL,
 	[ratingAnswer2] [int] NOT NULL,
 	[explanationForRating2] [text] NOT NULL,
+	[answer3Id] [int] NOT NULL,
 	[answer3] [text] NOT NULL,
 	[ratingAnswer3] [int] NOT NULL,
 	[explanationForRating3] [text] NOT NULL,
-    [result] [text] NOT NULL
-)
+	[result] [text] NOT NULL,
+	[tags] [text] NOT NULL,
+	[questionCreationDate] [datetime] NOT NULL
+) 
