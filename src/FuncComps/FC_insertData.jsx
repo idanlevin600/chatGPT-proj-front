@@ -263,9 +263,10 @@ export default function FC_insertData() {
     };
 
     const filterData = () => {
+        const newOriginalData = JSON.parse(localStorage.getItem('originalData')) || [];
         const formattedDateFilter = questionCreationDateFilter ? questionCreationDateFilter.format('DD/MM/YYYY') : '';
-
-        let filtered = originalData.filter(row => {
+        console.log("newOriginalData",newOriginalData)
+        let filtered = newOriginalData.filter(row => {
             const questionIdMatch = questionIdFilter ? row.QuestionId.includes(questionIdFilter) : true;
             const dateMatch = formattedDateFilter ? dayjs(row.QuestionCreationDate, 'DD/MM/YYYY').isAfter(dayjs(formattedDateFilter, 'DD/MM/YYYY'), 'day') || dayjs(row.QuestionCreationDate, 'DD/MM/YYYY').isSame(dayjs(formattedDateFilter, 'DD/MM/YYYY'), 'day') : true;
             const tagMatch = tagFilter ? row.Tags.includes(`<${tagFilter}>`) : true;
