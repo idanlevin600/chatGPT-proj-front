@@ -90,11 +90,13 @@ export default function FC_ResponsesTable() {
   };
     
 
-  const handleOpen = (data) => {
+  const handleOpen = (serialNumber) => {
+    // Find the data by serial number
+    const data = results.find(item => item.id === serialNumber);
     setSelectedData(data);
     setOpen(true);
   };
-
+  
   const handleClose = () => {
     setOpen(false);
     setSelectedData(null);
@@ -277,20 +279,23 @@ export default function FC_ResponsesTable() {
       name: '',
       label: 'Info',
       options: {
-        customBodyRender: (value, tableMeta) => (
-          <button
-            className="bg-blue-400 rounded-full px-3 py-1"
-            onClick={() => handleOpen(results[tableMeta.rowIndex])}
-          >
-            <svg className="h-6 w-6 text-neutral-100 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
-        ),
+        customBodyRender: (value, tableMeta) => {
+          const serialNumber = tableMeta.rowData[0]; // Assuming the first column is the serial number
+          return (
+            <button
+              className="bg-blue-400 rounded-full px-3 py-1"
+              onClick={() => handleOpen(serialNumber)}
+            >
+              <svg className="h-6 w-6 text-neutral-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          );
+        },
         setCellProps: () => ({ style: { textAlign: 'center' } }),
         filter: false,
       },
-    },
+    },   
     {
       name: 'delete',
       label: 'Delete',
